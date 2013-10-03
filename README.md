@@ -4,7 +4,7 @@ What?
 A simple CLI viewer for Puppet Reports
 
 Why?
-====
+----
 
 Because fuck web shit.
 
@@ -31,7 +31,7 @@ An example report is included in SAMPLE.txt  Tested against Puppet 3.3.0
 it might have bugs against older versions.
 
 Future?
-=======
+-------
 
  * Go through all the file resources and get the size of each, report on
    largest
@@ -39,6 +39,6 @@ Future?
    out why compiling is slow
 
 Who?
-====
+----
 
 R.I.Pienaar / rip@devco.net / @ripienaar / http://devco.net
