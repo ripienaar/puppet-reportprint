@@ -27,7 +27,8 @@ If you run it as root it should magically figure out where to find you
 most recent report - usually in */var/lib/puppet/state/last_run_report.yaml*
 but you can pass in a path using --report
 
-An example report is included in SAMPLE.txt
+An example report is included in SAMPLE.txt  Tested against Puppet 3.3.0
+it might have bugs against older versions.
 
 Future?
 =======
