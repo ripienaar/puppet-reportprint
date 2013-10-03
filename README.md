@@ -37,6 +37,7 @@ Future?
    largest
  * Parse the Puppet compiler metrics that was recently introduced to figure
    out why compiling is slow
+ * Retrieve a report from PuppetDB based on some criteria
 
 Who?
 ----
