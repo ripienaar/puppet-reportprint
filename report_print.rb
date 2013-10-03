@@ -64,8 +64,10 @@ def summarize_by_type(report)
   puts "Resources by resource type:"
   puts
 
+  padding = summary.keys.map{|r| r.size}.sort[-1] + 1
+
   summary.sort_by{|k, v| v}.reverse.each do |type, count|
-    puts "   %-20s: %s" % [type, count]
+    puts "   %#{padding}s: %s" % [type, count]
   end
 
   puts
