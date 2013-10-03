@@ -37,7 +37,7 @@ def print_report_metrics(report)
   padding = report.metrics.map{|i, m| m.values}.flatten(1).map{|i, m, v| m.size}.sort[-1] + 6
 
   report.metrics.sort_by{|i, m| m.label}.each do |i, metric|
-    puts "   %s" % metric.label
+    puts "   %s:" % metric.label
 
     metric.values.sort_by{|i, m, v| v}.reverse.each do |i, m, v|
       puts "%#{padding}s: %s" % [m, v]
@@ -95,7 +95,7 @@ def print_slow_resources(report, number=20)
 end
 
 def print_logs(report)
-  puts "Logs"
+  puts "%d Log lines:" % report.logs.size
   puts
 
   report.logs.each do |log|
