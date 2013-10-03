@@ -1,85 +1,85 @@
-$ report_print.rb --report last_run_report.yaml
-
-Report for devco.net in environment production at Wed Oct 02 22:29:46 +0100 2013
+Report for puppetmaster in environment production at Thu Oct 03 13:27:01 +0100 2013
 
              Report File: last_run_report.yaml
              Report Kind: apply
            Report Format: 4
-   Configuration Version: 1380749379
-                    UUID: 5591b9a3-5df6-44e5-b105-b89300477ce8
+   Configuration Version: 1380803218
+                    UUID: 83e4fef1-1ed2-45d7-9a1f-0381dd79915c
           Puppet Version: 3.3.0
-               Log Lines: 12 (show with --log)
+               Log Lines: 314 (show with --log)
 
 Report Metrics:
 
    Changes
-     Total                         : 2
+     Total                         : 165
 
    Events
-     Failure                       : 0
-     Success                       : 2
-     Total                         : 2
+     Failure                       : 1
+     Success                       : 165
+     Total                         : 166
 
    Resources
-     Changed                       : 2
-     Failed                        : 0
-     Failed to restart             : 0
-     Out of sync                   : 2
-     Restarted                     : 0
+     Changed                       : 165
+     Failed                        : 1
+     Failed to restart             : 1
+     Out of sync                   : 166
+     Restarted                     : 4
      Scheduled                     : 0
-     Skipped                       : 0
-     Total                         : 448
+     Skipped                       : 6
+     Total                         : 233
 
    Time
-     Config retrieval              : 7.246434
-     Cron                          : 0.000763
-     Exec                          : 0.519364
-     File                          : 0.609152
-     Filebucket                    : 0.000153
-     Group                         : 0.000537
-     Mailalias                     : 0.000438
-     Package                       : 0.15552
-     Schedule                      : 0.000938
-     Service                       : 5.026218
-     Total                         : 13.579147
-     User                          : 0.003778
-     Yumrepo                       : 0.015852
+     Anchor                        : 0.000892
+     Config retrieval              : 2.444167
+     Exec                          : 31.954335
+     File                          : 0.622187
+     Filebucket                    : 0.000137
+     Group                         : 0.000419
+     Host                          : 0.003673
+     Ini setting                   : 0.062487
+     Package                       : 60.709969
+     Puppetdb conn validator       : 120.345099
+     Schedule                      : 0.000595
+     Service                       : 0.656017
+     Total                         : 216.800466
+     User                          : 0.000489
 
 
 Resources by resource type:
 
-   File      : 273
-   Package   : 98
-   Service   : 39
-   Yumrepo   : 12
-   Exec      : 11
-   Schedule  : 6
-   User      : 4
-   Mailalias : 2
-   Group     : 1
-   Cron      : 1
-   Filebucket: 1
+   File                : 166
+   Ini_setting         : 24
+   Package             : 13
+   Exec                : 9
+   Schedule            : 6
+   Anchor              : 5
+   Service             : 5
+   User                : 1
+   Filebucket          : 1
+   Puppetdb_conn_validator: 1
+   Group               : 1
+   Host                : 1
 
 Slowest 20 resources by evaluation time:
 
-   0.3575 Service[mongod]
-   0.3517 Service[httpd]
-   0.3422 Service[acpid]
-   0.3137 Service[mcollective]
-   0.1428 Service[cups]
-   0.1308 Service[ntpdate]
-   0.1301 Service[munin-node]
-   0.1271 Service[iptables]
-   0.1257 Exec[concat_/etc/sysconfig/ip6tables]
-   0.1255 Service[ntpd]
-   0.1255 Service[messagebus]
-   0.1218 Service[netfs]
-   0.1166 File[/var/lib/puppet/concat/_etc_sysconfig_ip6tables/fragments/10_ip6tables-snippets-01-junkfilter]
-   0.1148 Service[bacula-fd]
-   0.1146 Service[haldaemon]
-   0.1136 Service[autofs]
-   0.1135 Service[ip6tables]
-   0.1130 Service[typhon]
-   0.1106 Service[bluetooth]
-   0.1096 Service[firstboot]
+    120.35 Puppetdb_conn_validator[puppetdb_conn]
+     31.76 Exec[compile-passenger]
+     19.83 Package[puppetdb]
+     17.52 Package[passenger]
+      5.22 Package[apache2-prefork-dev]
+      4.58 Package[httpd]
+      3.76 Package[puppetmaster]
+      3.04 Package[libcurl4-openssl-dev]
+      2.87 Package[libapr1-dev]
+      2.22 Package[puppetdb-terminus]
+      1.63 Package[ntp]
+      0.26 Service[puppet]
+      0.19 Service[puppetmaster]
+      0.16 Service[puppetdb]
+      0.14 File[/etc/puppet/hiera.yaml]
+      0.13 Exec[concat_/etc/apache2/ports.conf]
+      0.10 File[negotiation.load symlink]
+      0.07 File[/etc/apache2/mods-available/substitute.load]
+      0.06 Exec[6aaf9cb025abff4f57a0536ad86ea280163165cb]
+      0.05 Service[ntp]
 

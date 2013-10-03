@@ -13,7 +13,7 @@ def report_resources(report)
 end
 
 def resource_by_eval_time(report)
-  report_resources(report).sort_by{|r_name, r| r.evaluation_time}
+  report_resources(report).reject{|r_name, r| r.evaluation_time.nil? }.sort_by{|r_name, r| r.evaluation_time rescue 0}
 end
 
 def print_report_summary(report)
@@ -65,7 +65,7 @@ def summarize_by_type(report)
   puts
 
   summary.sort_by{|k, v| v}.reverse.each do |type, count|
-    puts "   %-10s: %s" % [type, count]
+    puts "   %-20s: %s" % [type, count]
   end
 
   puts
@@ -84,7 +84,7 @@ def print_slow_resources(report, number=20)
   resources = resource_by_eval_time(report)
 
   resources[(0-number)..-1].reverse.each do |r_name, r|
-    puts "   %-0.4f %s" % [r.evaluation_time, r_name]
+    puts "   %7.2f %s" % [r.evaluation_time, r_name]
   end
 
   puts
