@@ -4,6 +4,22 @@ require 'puppet'
 require 'pp'
 require 'optparse'
 
+class ::Numeric
+  def bytes_to_human
+    # Prevent nonsense values being returned for fractions
+    if self >= 1
+      units = ['B', 'KB', 'MB' ,'GB' ,'TB']
+      e = (Math.log(self)/Math.log(1024)).floor
+      # Cap at TB
+      e = 4 if e > 4
+      s = "%.2f " % (to_f / 1024**e)
+      s.sub(/\.?0*$/, units[e])
+    else
+      "0 B"
+    end
+  end
+end
+
 def load_report(path)
   YAML.load_file(path)
 end
@@ -16,8 +32,20 @@ def resource_by_eval_time(report)
   report_resources(report).reject{|r_name, r| r.evaluation_time.nil? }.sort_by{|r_name, r| r.evaluation_time rescue 0}
 end
 
+def resources_of_type(report, type)
+  report_resources(report).select{|r_name, r| r.resource_type == type}
+end
+
+def color(code, msg, reset=false)
+  colors = {:red => "[31m", :green => "[32m", :yellow => "[33m", :cyan => "[36m", :bold => "[1m", :reset => "[0m", :underline => "[4m"}
+
+  return "%s%s%s%s" % [colors.fetch(code, ""), msg, colors[:reset], reset ? colors.fetch(reset, "") : ""] if @options[:color]
+
+  msg
+end
+
 def print_report_summary(report)
-  puts "Report for %s in environment %s at %s" % [report.host, report.environment, report.time]
+  puts color(:bold, "Report for %s in environment %s at %s" % [color(:underline, report.host, :bold), color(:underline, report.environment, :bold), color(:underline, report.time, :bold)])
   puts
   puts "             Report File: %s" % @options[:report]
   puts "             Report Kind: %s" % report.kind
@@ -31,7 +59,7 @@ def print_report_summary(report)
 end
 
 def print_report_metrics(report)
-  puts "Report Metrics:"
+  puts color(:bold, "Report Metrics:")
   puts
 
   padding = report.metrics.map{|i, m| m.values}.flatten(1).map{|i, m, v| m.size}.sort[-1] + 6
@@ -63,7 +91,7 @@ def summarize_by_type(report)
     end
   end
 
-  puts "Resources by resource type:"
+  puts color(:bold, "Resources by resource type:")
   puts
 
   padding = summary.keys.map{|r| r.size}.sort[-1] + 1
@@ -76,11 +104,11 @@ def summarize_by_type(report)
 end
 
 def print_slow_resources(report, number=20)
-  puts "Slowest %d resources by evaluation time:" % number
+  puts color(:bold, "Slowest %d resources by evaluation time:" % number)
   puts
 
   if report.report_format < 4
-    puts "   Cannot print slow resources for report versions %d" % report.report_format
+    puts color(:red, "   Cannot print slow resources for report versions %d" % report.report_format)
     puts
     return
   end
@@ -95,12 +123,38 @@ def print_slow_resources(report, number=20)
 end
 
 def print_logs(report)
-  puts "%d Log lines:" % report.logs.size
+  puts color(:bold, "%d Log lines:" % report.logs.size)
   puts
 
   report.logs.each do |log|
     puts "   %s" % log.to_report
   end
+end
+
+def print_files(report, number=20)
+  resources = resources_of_type(report, "File")
+
+  files = {}
+
+  resources.each do |r_name, r|
+    if r_name =~ /^File\[(.+)\]$/
+      file = $1
+
+      if File.exist?(file)
+        files[file] = File.size?(file) || 0
+      end
+    end
+  end
+
+  number = files.size if files.size < number
+  puts color(:bold, "%d largest managed files" % number) + " (only those with full path as resource name that are readable)"
+  puts
+
+  files.sort_by{|f, s| s}[(0-number)..-1].reverse.each do |f_name, size|
+    puts "   %9s %s" % [size.bytes_to_human, f_name]
+  end
+
+  puts
 end
 
 def initialize_puppet
@@ -114,7 +168,7 @@ initialize_puppet
 
 opt = OptionParser.new
 
-@options = {:logs => false, :count => 20, :report => Puppet[:lastrunreport]}
+@options = {:logs => false, :count => 20, :report => Puppet[:lastrunreport], :color => true}
 
 opt.on("--logs", "Show logs") do |val|
   @options[:logs] = val
@@ -129,6 +183,10 @@ opt.on("--report [REPORT]", "Path to the Puppet last run report") do |val|
   @options[:report] = val
 end
 
+opt.on("--[no-]color", "Colorize the report") do |val|
+  @options[:color] = val
+end
+
 opt.parse!
 
 report = load_report(@options[:report])
@@ -138,3 +196,4 @@ print_report_metrics(report)
 summarize_by_type(report)
 print_slow_resources(report, @options[:count])
 print_logs(report) if @options[:logs]
+print_files(report)
