@@ -1,85 +1,112 @@
-Report for puppetmaster.example.com in environment production at Thu Oct 03 14:02:44 +0100 2013
+Report for puppetmaster.example.com in environment production at Thu Oct 03 15:39:53 +0000 2013
 
-             Report File: last_run_report.yaml
+             Report File: /var/lib/puppet/state/last_run_report.yaml
              Report Kind: apply
            Report Format: 4
-   Configuration Version: 1380805362
-                    UUID: 11f480af-3f9e-447c-9494-0a4334d626a8
+   Configuration Version: 1380814799
+                    UUID: 282d9beb-534a-42c5-90c9-564c8e3c7b5d
           Puppet Version: 3.3.0
                Log Lines: 202 (show with --log)
 
 Report Metrics:
 
    Changes:
-                        Total: 170
+                        Total: 2
 
    Events:
-                        Total: 170
-                      Success: 170
+                        Total: 2
+                      Success: 2
                       Failure: 0
 
    Resources:
-                        Total: 233
-                  Out of sync: 170
-                      Changed: 170
-                    Restarted: 5
-            Failed to restart: 0
-                      Skipped: 0
-                       Failed: 0
+                        Total: 237
+                  Out of sync: 2
+                      Changed: 2
                     Scheduled: 0
+                      Skipped: 0
+            Failed to restart: 0
+                       Failed: 0
+                    Restarted: 0
 
    Time:
-                        Total: 219.401023
-                      Package: 162.391277
-                         Exec: 32.336111
-      Puppetdb conn validator: 20.782745
-             Config retrieval: 2.522389
-                      Service: 0.763887
-                         File: 0.541291
-                  Ini setting: 0.058619
-                         Host: 0.002653
-                       Anchor: 0.000671
-                         User: 0.000459
-                        Group: 0.000424
-                     Schedule: 0.000345
-                   Filebucket: 0.000152
+                        Total: 8.82830401368714
+             Config retrieval: 7.83842301368713
+                      Service: 0.34024
+      Puppetdb conn validator: 0.258671
+                         File: 0.236882
+                         Exec: 0.12669
+                  Ini setting: 0.00891
+            Datacat collector: 0.00622
+                      Package: 0.004048
+             Datacat fragment: 0.003659
+                       Anchor: 0.003035
+                         User: 0.000435
+                     Schedule: 0.000424
+                        Group: 0.000362
+                         Host: 0.00022
+                   Filebucket: 8.5e-05
 
 
 Resources by resource type:
 
-                       File: 166
+                       File: 111
+           Datacat_fragment: 30
+                     Anchor: 25
                 Ini_setting: 24
-                    Package: 13
+                    Package: 17
                        Exec: 9
+                    Service: 7
                    Schedule: 6
-                     Anchor: 5
-                    Service: 5
+          Datacat_collector: 3
     Puppetdb_conn_validator: 1
-                 Filebucket: 1
                        User: 1
-                       Host: 1
                       Group: 1
+                 Filebucket: 1
+                       Host: 1
 
 Slowest 20 resources by evaluation time:
 
-     65.34 Package[puppetdb]
-     32.14 Exec[compile-passenger]
-     31.72 Package[apache2-prefork-dev]
-     22.65 Package[passenger]
-     20.78 Puppetdb_conn_validator[puppetdb_conn]
-     14.91 Package[libcurl4-openssl-dev]
-     12.49 Package[httpd]
-      4.65 Package[libapr1-dev]
-      4.27 Package[ntp]
-      3.94 Package[puppetmaster]
-      2.39 Package[puppetdb-terminus]
-      0.45 Service[puppetmaster]
-      0.15 Service[puppetdb]
-      0.13 Exec[concat_/etc/apache2/ports.conf]
-      0.07 File[/etc/apache2/mods-available/mime_magic.conf]
-      0.07 File[/etc/puppet/rack/config.ru]
+      0.26 Puppetdb_conn_validator[puppetdb_conn]
+      0.09 Service[puppet]
+      0.07 File[/etc/mcollective/facts.yaml]
       0.06 Exec[6aaf9cb025abff4f57a0536ad86ea280163165cb]
-      0.06 Service[httpd]
-      0.05 Service[ntp]
-      0.05 File[/etc/puppet/routes.yaml]
+      0.06 Exec[concat_/etc/apache2/ports.conf]
+      0.05 Service[httpd]
+      0.05 Service[puppetmaster]
+      0.04 Service[mcollective]
+      0.04 Service[activemq]
+      0.03 Service[puppetdb]
+      0.03 File[/etc/puppet/hiera.yaml]
+      0.03 File[/etc/puppet/rack/config.ru]
+      0.03 Service[ntp]
+      0.03 File[/var/lib/puppet/concat/bin/concatfragments.sh]
+      0.03 File[/etc/puppet/routes.yaml]
+      0.00 File[/etc/apache2/ports.conf]
+      0.00 Datacat_collector[mcollective::server]
+      0.00 Datacat_collector[mcollective::client]
+      0.00 Datacat_collector[mcollective::site_libdir]
+      0.00 File[/etc/puppet/rack]
+
+20 largest managed files (only those with full path as resource name that are readable)
+
+     6.50 KB /usr/local/share/mcollective/mcollective/util/actionpolicy.rb
+     4.01 KB /etc/mcollective/facts.yaml
+     4.00 KB /etc/apache2/mods-enabled
+     4.00 KB /usr/local/share/mcollective
+     4.00 KB /usr/local/share/mcollective/mcollective
+     4.00 KB /etc/activemq/instances-enabled/mcollective
+     4.00 KB /etc/puppet/rack/public
+     4.00 KB /var/log/apache2
+     4.00 KB /etc/apache2/sites-available
+     4.00 KB /var/lib/puppet/concat
+     4.00 KB /etc/apache2/conf.d
+     4.00 KB /var/lib/puppet/concat/_etc_apache2_ports.conf
+     4.00 KB /var/www
+     4.00 KB /usr/local/share/mcollective/mcollective/util
+     4.00 KB /etc/apache2/mods-available
+     4.00 KB /var/lib/puppet/concat/_etc_apache2_ports.conf/fragments
+     4.00 KB /var/lib/puppet/concat/bin
+     4.00 KB /etc/activemq/instances-available/mcollective
+     4.00 KB /etc/puppet/rack
+     4.00 KB /etc/apache2/sites-enabled
 

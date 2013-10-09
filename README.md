@@ -11,7 +11,7 @@ Because fuck web shit.
 The main question I have is why is Puppet so slow to apply a specific
 catalog.  This report printer will show you standard issue report metrics
 and such but it will also show you the resources in the report sorted
-by slowest evaluation time.
+by slowest evaluation time as well as the largest files being managed.
 
 Evaluation time is how long Puppet took at run time to apply a specific
 resource.
@@ -33,8 +33,6 @@ it might have bugs against older versions.
 Future?
 -------
 
- * Go through all the file resources and get the size of each, report on
-   largest
  * Parse the Puppet compiler metrics that was recently introduced to figure
    out why compiling is slow
  * Retrieve a report from PuppetDB based on some criteria

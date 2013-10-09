@@ -49,10 +49,10 @@ def print_report_summary(report)
   puts
   puts "             Report File: %s" % @options[:report]
   puts "             Report Kind: %s" % report.kind
+  puts "          Puppet Version: %s" % report.puppet_version
   puts "           Report Format: %s" % report.report_format
   puts "   Configuration Version: %s" % report.configuration_version
   puts "                    UUID: %s" % report.transaction_uuid rescue nil
-  puts "          Puppet Version: %s" % report.puppet_version
   puts "               Log Lines: %s %s" % [report.logs.size, @options[:logs] ? "" : "(show with --log)"]
 
   puts
@@ -77,7 +77,7 @@ def print_report_metrics(report)
   puts
 end
 
-def summarize_by_type(report)
+def print_summary_by_type(report)
   summary = {}
 
   report_resources(report).each do |resource|
@@ -94,19 +94,14 @@ def summarize_by_type(report)
   puts color(:bold, "Resources by resource type:")
   puts
 
-  padding = summary.keys.map{|r| r.size}.sort[-1] + 1
-
   summary.sort_by{|k, v| v}.reverse.each do |type, count|
-    puts "   %#{padding}s: %s" % [type, count]
+    puts "   %4d %s" % [count, type]
   end
 
   puts
 end
 
 def print_slow_resources(report, number=20)
-  puts color(:bold, "Slowest %d resources by evaluation time:" % number)
-  puts
-
   if report.report_format < 4
     puts color(:red, "   Cannot print slow resources for report versions %d" % report.report_format)
     puts
@@ -114,6 +109,11 @@ def print_slow_resources(report, number=20)
   end
 
   resources = resource_by_eval_time(report)
+
+  number = resources.size if resources.size < number
+
+  puts color(:bold, "Slowest %d resources by evaluation time:" % number)
+  puts
 
   resources[(0-number)..-1].reverse.each do |r_name, r|
     puts "   %7.2f %s" % [r.evaluation_time, r_name]
@@ -129,6 +129,8 @@ def print_logs(report)
   report.logs.each do |log|
     puts "   %s" % log.to_report
   end
+
+  puts
 end
 
 def print_files(report, number=20)
@@ -140,13 +142,14 @@ def print_files(report, number=20)
     if r_name =~ /^File\[(.+)\]$/
       file = $1
 
-      if File.exist?(file)
+      if File.exist?(file) && File.readable?(file) && File.file?(file)
         files[file] = File.size?(file) || 0
       end
     end
   end
 
   number = files.size if files.size < number
+
   puts color(:bold, "%d largest managed files" % number) + " (only those with full path as resource name that are readable)"
   puts
 
@@ -193,7 +196,7 @@ report = load_report(@options[:report])
 
 print_report_summary(report)
 print_report_metrics(report)
-summarize_by_type(report)
+print_summary_by_type(report)
 print_slow_resources(report, @options[:count])
+print_files(report, @options[:count])
 print_logs(report) if @options[:logs]
-print_files(report)
