@@ -171,7 +171,7 @@ initialize_puppet
 
 opt = OptionParser.new
 
-@options = {:logs => false, :count => 20, :report => Puppet[:lastrunreport], :color => true}
+@options = {:logs => false, :count => 20, :report => Puppet[:lastrunreport], :color => STDOUT.tty?}
 
 opt.on("--logs", "Show logs") do |val|
   @options[:logs] = val
