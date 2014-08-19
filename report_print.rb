@@ -142,7 +142,7 @@ def print_files(report, number=20)
     if r_name =~ /^File\[(.+)\]$/
       file = $1
 
-      if File.exist?(file) && File.readable?(file) && File.file?(file)
+      if File.exist?(file) && File.readable?(file) && File.file?(file) && !File.symlink?(file)
         files[file] = File.size?(file) || 0
       end
     end
