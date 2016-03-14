@@ -59,6 +59,12 @@ def print_report_summary(report)
 end
 
 def print_report_metrics(report)
+  if report.metrics.empty?
+    puts color(:bold, "No Report Metrics")
+    puts
+    return
+  end
+
   puts color(:bold, "Report Metrics:")
   puts
 
