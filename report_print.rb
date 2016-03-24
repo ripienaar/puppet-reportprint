@@ -41,7 +41,21 @@ def resources_of_type(report, type)
 end
 
 def color(code, msg, reset=false)
-  colors = {:red => "[31m", :green => "[32m", :yellow => "[33m", :cyan => "[36m", :bold => "[1m", :reset => "[0m", :underline => "[4m"}
+  colors = {
+    :red       => "[31m",
+    :green     => "[32m",
+    :yellow    => "[33m",
+    :cyan      => "[36m",
+    :bold      => "[1m",
+    :underline => "[4m",
+    :reset     => "[0m",
+  }
+
+  colors.merge!(
+    :changed   => colors[:yellow],
+    :unchanged => colors[:green],
+    :failed    => colors[:red],
+  )
 
   return "%s%s%s%s" % [colors.fetch(code, ""), msg, colors[:reset], reset ? colors.fetch(reset, "") : ""] if @options[:color]
 
@@ -60,6 +74,31 @@ def print_report_summary(report)
   puts "               Log Lines: %s %s" % [report.logs.size, @options[:logs] ? "" : "(show with --log)"]
 
   puts
+end
+
+def print_report_motd(report, motd_path)
+  motd = []
+  header = "# #{report.host} #"
+  headline = "#" * header.size
+  motd << headline << header << headline << ''
+
+  motd << "Last puppet run happened at %s in environment %s." % [report.time, report.environment]
+
+  motd << "The result of this puppet run was %s." % color(report.status.to_sym, report.status)
+
+  if report.metrics.empty? or report.metrics["events"].nil?
+    motd << 'No Report Metrics.'
+  else
+    motd << 'Events:'
+    report.metrics["events"].values.each do |metric|
+      i, m, v = metric
+      motd.last << ' ' << [m, v].join(': ') << '.'
+    end
+  end
+
+  motd << '' << ''
+
+  File.write(motd_path, motd.join("\n"))
 end
 
 def print_report_metrics(report)
@@ -200,10 +239,24 @@ initialize_puppet
 
 opt = OptionParser.new
 
-@options = {:logs => false, :count => 20, :report => Puppet[:lastrunreport], :color => STDOUT.tty?}
+@options = {
+  :logs      => false,
+  :motd      => false,
+  :motd_path => '/etc/motd',
+  :count     => 20,
+  :report    => Puppet[:lastrunreport],
+  :color     => STDOUT.tty?}
 
 opt.on("--logs", "Show logs") do |val|
   @options[:logs] = val
+end
+
+opt.on("--motd", "Produce an output suitable for MOTD") do |val|
+  @options[:motd] = val
+end
+
+opt.on("--motd-path [PATH]", "Path to the MOTD file to overwrite with the --motd option") do |val|
+  @options[:motd_path] = val
 end
 
 opt.on("--count [RESOURCES]", Integer, "Number of resources to show evaluation times for") do |val|
@@ -223,10 +276,14 @@ opt.parse!
 
 report = load_report(@options[:report])
 
-print_report_summary(report)
-print_report_metrics(report)
-print_summary_by_type(report)
-print_slow_resources(report, @options[:count])
-print_files(report, @options[:count])
-print_summary_by_containment_path(report, @options[:count])
-print_logs(report) if @options[:logs]
+if @options[:motd]
+  print_report_motd(report, @options[:motd_path])
+else
+  print_report_summary(report)
+  print_report_metrics(report)
+  print_summary_by_type(report)
+  print_slow_resources(report, @options[:count])
+  print_files(report, @options[:count])
+  print_summary_by_containment_path(report, @options[:count])
+  print_logs(report) if @options[:logs]
+end
