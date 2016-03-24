@@ -28,6 +28,10 @@ def report_resources(report)
   report.resource_statuses
 end
 
+def resource_with_evaluation_time(report)
+  report_resources(report).select{|r_name, r| !r.evaluation_time.nil? }
+end
+
 def resource_by_eval_time(report)
   report_resources(report).reject{|r_name, r| r.evaluation_time.nil? }.sort_by{|r_name, r| r.evaluation_time rescue 0}
 end
@@ -67,7 +71,7 @@ def print_report_metrics(report)
   report.metrics.sort_by{|i, m| m.label}.each do |i, metric|
     puts "   %s:" % metric.label
 
-    metric.values.sort_by{|i, m, v| v}.reverse.each do |i, m, v|
+    metric.values.sort_by{|j, m, v| v}.reverse.each do |j, m, v|
       puts "%#{padding}s: %s" % [m, v]
     end
 
@@ -128,6 +132,31 @@ def print_logs(report)
 
   report.logs.each do |log|
     puts "   %s" % log.to_report
+  end
+
+  puts
+end
+
+def print_summary_by_containment_path(report, number=20)
+  resources = resource_with_evaluation_time(report)
+
+  containment = Hash.new(0)
+
+  resources.each do |r_name, r|
+    r.containment_path.each do |containment_path|
+      #if containment_path !~ /\[/
+        containment[containment_path] += r.evaluation_time
+      #end
+    end
+  end
+
+  number = containment.size if containment.size < number
+
+  puts color(:bold, "%d most time consuming containment" % number)
+  puts
+
+  containment.sort_by{|c, s| s}[(0-number)..-1].reverse.each do |c_name, evaluation_time|
+    puts "   %7.2f %s" % [evaluation_time, c_name]
   end
 
   puts
@@ -199,4 +228,5 @@ print_report_metrics(report)
 print_summary_by_type(report)
 print_slow_resources(report, @options[:count])
 print_files(report, @options[:count])
+print_summary_by_containment_path(report, @options[:count])
 print_logs(report) if @options[:logs]
