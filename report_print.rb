@@ -4,6 +4,10 @@ require 'puppet'
 require 'pp'
 require 'optparse'
 
+def get_server_reports_dir
+  "/opt/puppetlabs/server/data/puppetserver/reports"
+end
+
 class ::Numeric
   def bytes_to_human
     # Prevent nonsense values being returned for fractions
@@ -234,6 +238,48 @@ def print_files(report, number=20)
   puts
 end
 
+def get_reports_for_node(nodename)
+  Dir.glob("%s/%s/*.yaml" % [get_server_reports_dir, nodename]).sort_by{|p|File.basename(p, ".*")}
+end
+
+def load_report_for_node(nodename, report)
+  report_path = "%s/%s/%s.yaml" % [get_server_reports_dir, nodename, report]
+  puts report_path
+  load_report(report_path) unless report_path.nil?
+end
+
+def load_last_report_for_node(nodename)
+  report_path = get_reports_for_node(nodename).last
+  load_report(report_path) unless report_path.nil?
+end
+
+def print_reports_for_node(nodename)
+  puts color(:bold, "Reports for %s" % nodename)
+  get_reports_for_node(nodename).each do |report_path|
+    prefix = File.basename(report_path, ".*")
+    report = load_report(report_path)
+    print_report_oneliner(report, prefix)
+  end
+end
+
+def print_report_oneliner(report, prefix)
+  puts "%s: %s" % [prefix, color(report.status.to_sym, report.status)]
+end
+
+def print_node_oneliner(nodename)
+  report = load_last_report_for_node(nodename)
+  print_report_oneliner(report, report.name) unless report.nil?
+end
+
+def print_server_nodes_status
+  puts color(:bold, 'Nodes list')
+  dir = get_server_reports_dir
+  puts color(:bold, 'No nodes found!') unless Puppet::FileSystem.exist?(dir)
+  Dir.glob("%s/*/" % dir).each do |node_path|
+    print_node_oneliner(File.basename(node_path))
+  end
+end
+
 def initialize_puppet
   require 'puppet/util/run_mode'
   Puppet.settings.preferred_run_mode = :agent
@@ -247,14 +293,30 @@ opt = OptionParser.new
 
 @options = {
   :logs      => false,
+  :history   => false,
+  :server    => false,
+  :node      => nil,
   :motd      => false,
   :motd_path => '/etc/motd',
   :count     => 20,
   :report    => Puppet[:lastrunreport],
+  :reportid  => nil,
   :color     => STDOUT.tty?}
 
 opt.on("--logs", "Show logs") do |val|
   @options[:logs] = val
+end
+
+opt.on("--nodelist", "(Puppet Server) List Puppet nodes and the status of their last report") do |val|
+  @options[:server] = val
+end
+
+opt.on("--node [NODE]", "(Puppet Server) Use last report of a node") do |val|
+  @options[:node] = val
+end
+
+opt.on("--history", "(with --node) Print the reports history for a node") do |val|
+  @options[:history] = val
 end
 
 opt.on("--motd", "Produce an output suitable for MOTD") do |val|
@@ -274,15 +336,28 @@ opt.on("--report [REPORT]", "Path to the Puppet last run report") do |val|
   @options[:report] = val
 end
 
+opt.on("--report-id [REPORTID]", "(with --node) ID of the report to load") do |val|
+  @options[:reportid] = val
+end
+
 opt.on("--[no-]color", "Colorize the report") do |val|
   @options[:color] = val
 end
 
 opt.parse!
 
-report = load_report(@options[:report])
+report = load_report(@options[:report]) unless @options[:server] or @options[:node]
+if @options[:node] and not @options[:history] and not @options[:reportid]
+  report = load_last_report_for_node(@options[:node])
+elsif @options[:node] and @options[:reportid]
+  report = load_report_for_node(@options[:node], @options[:reportid])
+end
 
-if @options[:motd]
+if @options[:server]
+  print_server_nodes_status
+elsif @options[:node] and @options[:history]
+  print_reports_for_node(@options[:node])
+elsif @options[:motd]
   print_report_motd(report, @options[:motd_path])
 else
   print_report_summary(report)

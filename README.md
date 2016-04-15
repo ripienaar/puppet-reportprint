@@ -30,6 +30,24 @@ but you can pass in a path using --report
 An example report is included in SAMPLE.txt  Tested against Puppet 3.3.0
 it might have bugs against older versions.
 
+Puppet server support
+---------------------
+
+This script can also print Puppet Server reports stored with `reports = store`.
+
+Supported Puppet Server commands:
+
+`report_print.rb --nodelist`: List nodes and their last report status
+
+`report_print.rb --node foobar.example.com`: Prints last report for
+node foobar.example.com
+
+`report_print.rb --node foobar.example.com --history`: Prints reports ID and
+summary for node foobar.example.com
+
+`report_print.rb --node foobar.example.com --report-id 204212041337`: Prints
+report 204212041337 of node foobar.example.com
+
 Future?
 -------
 
