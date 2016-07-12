@@ -19,7 +19,7 @@ require 'pp'
 require 'optparse'
 
 def get_server_reports_dir
-  "/opt/puppetlabs/server/data/puppetserver/reports"
+  Puppet.settings[:reportdir]
 end
 
 class ::Numeric
