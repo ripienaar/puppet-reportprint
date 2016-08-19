@@ -72,7 +72,7 @@ def color(code, msg, reset=false)
   colors.merge!(
     :changed   => colors[:yellow],
     :unchanged => colors[:green],
-    :failed    => colors[:red],
+    :failed    => colors[:red]
   )
 
   return "%s%s%s%s" % [colors.fetch(code, ""), msg, colors[:reset], reset ? colors.fetch(reset, "") : ""] if @options[:color]
