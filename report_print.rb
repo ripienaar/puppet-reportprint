@@ -84,7 +84,6 @@ def print_report_summary(report)
   puts color(:bold, "Report for %s in environment %s at %s" % [color(:underline, report.host, :bold), color(:underline, report.environment, :bold), color(:underline, report.time, :bold)])
   puts
   puts "             Report File: %s" % @options[:report]
-  puts "             Report Kind: %s" % report.kind
   puts "          Puppet Version: %s" % report.puppet_version
   puts "           Report Format: %s" % report.report_format
   puts "   Configuration Version: %s" % report.configuration_version
